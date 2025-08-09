@@ -19,8 +19,8 @@ const {
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-// Preload the first banner image for LCP optimization
-const firstBannerImage = YukinaConfig.banners[0];
+// Preload the single banner image for LCP optimization
+const bannerImage = YukinaConfig.banners[0];
 ---
 
 <!-- Global Metadata -->
@@ -34,12 +34,12 @@ const firstBannerImage = YukinaConfig.banners[0];
 <link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
 <link rel="dns-prefetch" href="https://s2.loli.net" />
 
-<!-- Preload critical banner image for LCP -->
-{isHomePage && firstBannerImage && (
+<!-- Preload critical banner image for LCP (highest priority) -->
+{isHomePage && bannerImage && (
   <link
     rel="preload"
     as="image"
-    href={firstBannerImage}
+    href={bannerImage}
     fetchpriority="high"
   />
 )}

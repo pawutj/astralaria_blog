@@ -13,26 +13,19 @@ const { title, subTitle, bannerImage, slug } = Astro.props;
 const hasTitle = title !== undefined || subTitle !== undefined;
 const hasHeaderImg = bannerImage !== undefined || slug !== undefined;
 
-let carouselImgsList = YukinaConfig.banners;
-const carouselAnimationTime = `${carouselImgsList.length * 6}s`;
+// Use only the first banner image for better performance
+const bannerImg = YukinaConfig.banners[0];
 ---
 
 <div id="banner" class="banner onload-animation-fade-in">
   <div class="transition-main banner-inner h-full w-full">
     {
       !hasHeaderImg && (
-        <div class="carousel">
-          <ul id="carousel_imgs">
-            {carouselImgsList.map((img, index) => (
-              <li
-                class="item"
-                style={{ 
-                  animationDelay: `${index * 6}s`,
-                  backgroundImage: `url(${img})`
-                }}
-              />
-            ))}
-          </ul>
+        <div class="static-banner">
+          <div
+            class="banner-image"
+            style={{ backgroundImage: `url(${bannerImg})` }}
+          />
         </div>
       )
     }
@@ -40,7 +33,7 @@ const carouselAnimationTime = `${carouselImgsList.length * 6}s`;
       hasHeaderImg && (
         <div class="cover">
           <img
-            class="item"
+            class="cover-image"
             src={bannerImage ?? GetCoverURLForUnspecifiedEntry(slug ?? "")}
             alt="PostCover"
             loading="eager"
@@ -111,64 +104,22 @@ const carouselAnimationTime = `${carouselImgsList.length * 6}s`;
   </div>
 </div>
 
-<script>
-  const styleElement = document.createElement("style");
-  const carouselImgs = document.getElementById("carousel_imgs");
-  const carouselImgsCount = carouselImgs?.children.length ?? 0;
-
-  const carouselAnimation = `
-  @keyframes carousel-animation {
-    0% {
-      opacity: 0;
-      transform: scale(1);
-    }
-    3% {
-      opacity: 1;
-    }
-    8% {
-      opacity: 1;
-      animation-timing-function: ease-out;
-    }
-    ${100 / carouselImgsCount}% {
-      opacity: 1;
-    }
-    ${100 / carouselImgsCount + 50 / carouselImgsCount}% {
-      opacity: 0;
-      animation-timing-function: ease-out;
-    }
-    100% {
-      opacity: 0;
-      transform: scale(2);
-    }
-  }
-  `;
-  styleElement.textContent = carouselAnimation;
-  let bannerElement = document.getElementById("banner");
-  if (bannerElement && !bannerElement.querySelector("style"))
-    bannerElement.appendChild(styleElement);
-</script>
-
-<style define:vars={{ carouselAnimationTime }}>
+<style>
   .banner {
     @apply relative h-[calc(var(--banner-height)*3/4)] opacity-100 lg:h-[var(--banner-height)];
   }
 
-  .carousel {
+  .static-banner {
     @apply absolute left-0 top-0 -z-10 block h-[calc(var(--banner-height)*3/4)] w-full overflow-hidden bg-white lg:h-[var(--banner-height)];
-    animation-fill-mode: forwards;
   }
 
-  .carousel::before {
+  .static-banner::before {
     @apply absolute left-0 top-0 z-10 block h-full w-full bg-black/25 transition-all content-[''];
     @apply dark:bg-black/30;
   }
 
-  .carousel .item {
-    @apply absolute left-0 top-0 z-0 h-full w-full origin-center bg-cover bg-center bg-no-repeat opacity-0;
-    animation: carousel-animation var(--carouselAnimationTime) linear infinite
-      0s;
-    backface-visibility: hidden;
-    transform-style: preserve-3d;
+  .banner-image {
+    @apply h-full w-full bg-cover bg-center bg-no-repeat;
   }
 
   .cover {
@@ -180,7 +131,7 @@ const carouselAnimationTime = `${carouselImgsList.length * 6}s`;
     @apply dark:bg-black/30;
   }
 
-  .cover .item {
+  .cover-image {
     @apply h-full w-full object-cover;
   }
 
@@ -218,17 +169,6 @@ const carouselAnimationTime = `${carouselImgsList.length * 6}s`;
     }
     100% {
       transform: translate3d(85px, 0, 0);
-    }
-  }
-
-  @keyframes banner-onload-animation {
-    0% {
-      opacity: 0;
-      height: calc(var(--banner-height) + 4rem);
-    }
-    100% {
-      opacity: 1;
-      height: var(--banner-height);
     }
   }
 </style>
