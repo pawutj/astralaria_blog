@@ -18,6 +18,8 @@ import pagefind from "astro-pagefind";
 
 // https://astro.build/config
 export default defineConfig({
+  output: 'static', // pre-build ทุกหน้า
+  adapter: vercel(),
   site: YukinaConfig.site,
   integrations: [
     tailwind(),
