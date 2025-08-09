@@ -21,6 +21,29 @@ export default defineConfig({
   output: 'static', // pre-build ทุกหน้า
   adapter: vercel(),
   site: YukinaConfig.site,
+  
+  // Enable compression and optimization
+  compressHTML: true,
+  
+  vite: {
+    build: {
+      // Enable CSS code splitting
+      cssCodeSplit: true,
+      // Optimize bundle
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor': ['lozad', 'overlayscrollbars'],
+          }
+        }
+      }
+    },
+    // Optimize dependencies
+    optimizeDeps: {
+      include: ['lozad', 'overlayscrollbars']
+    }
+  },
+
   integrations: [
     tailwind(),
     svelte(),

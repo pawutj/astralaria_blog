@@ -3,6 +3,20 @@ import YukinaConfig from "../../yukina.config";
 import GlobalStyles from "./GlobalStyles.astro";
 import ScriptSetup from "./ScriptSetup.astro";
 
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  isHomePage?: boolean;
+}
+
+const {
+  title = YukinaConfig.title,
+  description = YukinaConfig.description,
+  image,
+  isHomePage = false
+} = Astro.props;
+
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -12,27 +26,45 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta name="generator" content={Astro.generator} />
 
+<!-- Preload critical resources -->
+<link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+<link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
+
+<!-- Preload critical fonts -->
+<link
+  rel="preload"
+  href="https://fonts.bunny.net/css?family=noto-sans-sc:400,500,600,700|raleway:500,700"
+  as="style"
+  onload="this.onload=null;this.rel='stylesheet'"
+/>
+<noscript>
+  <link
+    href="https://fonts.bunny.net/css?family=noto-sans-sc:400,500,600,700|raleway:500,700"
+    rel="stylesheet"
+  />
+</noscript>
+
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
 
 <!-- Primary Meta Tags -->
-<title>{YukinaConfig.title}</title>
-<meta name="title" content={YukinaConfig.title} />
-<meta name="description" content={YukinaConfig.description} />
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content={Astro.url} />
-<meta property="og:title" content={YukinaConfig.title} />
-<meta property="og:description" content={YukinaConfig.description} />
-<!-- <meta property="og:image" content={new URL(image, Astro.url)} /> -->
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{image && <meta property="og:image" content={new URL(image, Astro.url)} />}
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content={Astro.url} />
-<meta property="twitter:title" content={YukinaConfig.title} />
-<meta property="twitter:description" content={YukinaConfig.description} />
-<!-- <meta property="twitter:image" content={new URL(image, Astro.url)} /> -->
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+{image && <meta property="twitter:image" content={new URL(image, Astro.url)} />}
 
 <!-- RSS AutoDiscovery -->
 <link
@@ -45,17 +77,19 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 <!-- SiteMap -->
 <link rel="sitemap" href="/sitemap-index.xml" />
 
-<!-- CSS -->
+<!-- Critical CSS - Load KaTeX asynchronously for non-critical -->
 <link
-  rel="stylesheet"
+  rel="preload"
   href="https://fastly.jsdelivr.net/npm/katex/dist/katex.min.css"
+  as="style"
+  onload="this.onload=null;this.rel='stylesheet'"
 />
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.bunny.net" />
-<link
-  href="https://fonts.bunny.net/css?family=noto-sans-sc:100,200,300,400,500,600,700,800,900|raleway:500,700"
-  rel="stylesheet"
-/>
+<noscript>
+  <link
+    rel="stylesheet"
+    href="https://fastly.jsdelivr.net/npm/katex/dist/katex.min.css"
+  />
+</noscript>
 
 <GlobalStyles />
 <ScriptSetup />

@@ -6,6 +6,30 @@
   import lozad from "lozad";
   import { OverlayScrollbars } from "overlayscrollbars";
 
+  // Optimized intersection observer for better INP
+  const createOptimizedObserver = () => {
+    return new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const img = entry.target as HTMLImageElement;
+            const src = img.dataset.src;
+            if (src) {
+              img.src = src;
+              img.classList.add("loaded");
+              img.removeAttribute("data-src");
+              observer.unobserve(img);
+            }
+          }
+        });
+      },
+      {
+        rootMargin: "50px 0px", // Load images 50px before they come into view
+        threshold: 0.01
+      }
+    );
+  };
+
   // setup post url
   const setupUrlAnchor = () => {
     const url = window.location.href;
@@ -16,51 +40,89 @@
     }
   };
 
-  // setup lazy load for images
+  // Enhanced lazy loading setup
   const setupLozad = () => {
-    const observer = lozad(".lozad", {
+    // Use custom observer for better performance
+    const observer = createOptimizedObserver();
+    
+    // Observe all lazy images
+    document.querySelectorAll('.lozad').forEach(img => {
+      observer.observe(img);
+    });
+
+    // Fallback lozad for other features
+    const lozadObserver = lozad(".lozad", {
       loaded: (el) => {
         el.classList.add("loaded");
       },
+      threshold: 0.01,
+      rootMargin: "50px 0px"
     });
 
-    observer.observe();
+    lozadObserver.observe();
   };
 
-  // add global scroll bar
+  // Optimized scroll bar setup
   const setupScrollBar = () => {
-    OverlayScrollbars(
-      { target: document.body, cancel: { nativeScrollbarsOverlaid: true } },
-      {
-        scrollbars: {
-          theme: "scrollbar-base scrollbar-auto py-1",
-          autoHide: "move",
+    // Use requestIdleCallback for non-critical UI setup
+    const initScrollbars = () => {
+      OverlayScrollbars(
+        { target: document.body, cancel: { nativeScrollbarsOverlaid: true } },
+        {
+          scrollbars: {
+            theme: "scrollbar-base scrollbar-auto py-1",
+            autoHide: "move",
+          },
         },
-      },
-    );
-    document.body.classList.remove("overflow-y-hidden");
+      );
+      document.body.classList.remove("overflow-y-hidden");
 
-    // add scrollbar for code blocks
-    document.querySelectorAll("pre").forEach((ele) => {
-      OverlayScrollbars(ele, {
-        scrollbars: {
-          theme: "scrollbar-base scrollbar-dark px-2",
-          autoHide: "leave",
-          autoHideDelay: 500,
-          autoHideSuspend: false,
-        },
+      // add scrollbar for code blocks
+      document.querySelectorAll("pre").forEach((ele) => {
+        OverlayScrollbars(ele, {
+          scrollbars: {
+            theme: "scrollbar-base scrollbar-dark px-2",
+            autoHide: "leave",
+            autoHideDelay: 500,
+            autoHideSuspend: false,
+          },
+        });
       });
-    });
+    };
+
+    // Use requestIdleCallback for better performance
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(initScrollbars);
+    } else {
+      setTimeout(initScrollbars, 0);
+    }
   };
 
-  // init
+  // Debounced resize handler for better INP
+  let resizeTimeout: number;
+  const handleResize = () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      // Handle any resize-dependent logic here
+    }, 250);
+  };
+
+  // init with better performance
   const setup = () => {
     setupUrlAnchor();
     setupLozad();
     setupScrollBar();
+    
+    window.addEventListener('resize', handleResize, { passive: true });
   };
 
-  document.addEventListener("DOMContentLoaded", setup);
+  // Use proper event timing for better INP
+  if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", setup);
+  } else {
+    setup();
+  }
+
   if (window.swup?.hooks) {
     setup();
   } else {

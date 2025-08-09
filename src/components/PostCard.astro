@@ -17,12 +17,18 @@ export interface Props {
   description?: string;
   image?: string;
   readingMetadata: { time: number; wordCount: number };
+  priority?: boolean; // For above-the-fold images
+  index?: number; // For determining priority
 }
 
 const props = Astro.props;
 const entryID = IdToSlug(props.id);
 const contentUrl = `/posts/${entryID}`;
 const { time, wordCount } = props.readingMetadata;
+
+// First 2 posts should load immediately (above the fold)
+const shouldPreload = props.priority || (props.index !== undefined && props.index < 2);
+const imageUrl = props.image ?? GetCoverURLForUnspecifiedEntry(entryID);
 ---
 
 <div
@@ -32,11 +38,28 @@ const { time, wordCount } = props.readingMetadata;
     href={contentUrl}
     class="relative h-[128px] transition-all hover:brightness-75 lg:hidden"
   >
-    <img
-      class="lozad absolute left-0 top-0 h-full w-full rounded-t-3xl object-cover lg:hidden"
-      data-src={props.image ?? GetCoverURLForUnspecifiedEntry(entryID)}
-      alt="CoverPost"
-    />
+    {shouldPreload ? (
+      <img
+        class="absolute left-0 top-0 h-full w-full rounded-t-3xl object-cover lg:hidden"
+        src={imageUrl}
+        alt="CoverPost"
+        loading="eager"
+        fetchpriority="high"
+        decoding="sync"
+        width={400}
+        height={128}
+      />
+    ) : (
+      <img
+        class="lozad absolute left-0 top-0 h-full w-full rounded-t-3xl object-cover lg:hidden"
+        data-src={imageUrl}
+        alt="CoverPost"
+        loading="lazy"
+        decoding="async"
+        width={400}
+        height={128}
+      />
+    )}
     <div class="absolute bottom-2 w-full">
       <div class="mx-2 flex flex-row justify-between">
         <div
@@ -146,11 +169,28 @@ const { time, wordCount } = props.readingMetadata;
     <div class="cover-container">
       <a href={contentUrl} class="cover-wrapper">
         <Icon class="right-icon" name="cuida:caret-right-outline" size={96} />
-        <img
-          class="lozad h-[212px] w-[404px] select-none rounded-r-3xl object-cover dark:brightness-90"
-          data-src={props.image ?? GetCoverURLForUnspecifiedEntry(entryID)}
-          alt="PostCover"
-        />
+        {shouldPreload ? (
+          <img
+            class="h-[212px] w-[404px] select-none rounded-r-3xl object-cover dark:brightness-90"
+            src={imageUrl}
+            alt="PostCover"
+            loading="eager"
+            fetchpriority="high"
+            decoding="sync"
+            width={404}
+            height={212}
+          />
+        ) : (
+          <img
+            class="lozad h-[212px] w-[404px] select-none rounded-r-3xl object-cover dark:brightness-90"
+            data-src={imageUrl}
+            alt="PostCover"
+            loading="lazy"
+            decoding="async"
+            width={404}
+            height={212}
+          />
+        )}
       </a>
     </div>
   </div>

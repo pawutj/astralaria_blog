@@ -38,6 +38,8 @@ const { page } = Astro.props;
               readingMetadata={
                 (entry.rendered!.metadata as any).frontmatter.readingMetadata
               }
+              index={index}
+              priority={index < 2}
             />
           </div>
         ))
