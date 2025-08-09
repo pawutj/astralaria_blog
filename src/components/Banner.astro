@@ -17,14 +17,20 @@ const hasHeaderImg = bannerImage !== undefined || slug !== undefined;
 const bannerImg = YukinaConfig.banners[0];
 ---
 
-<div id="banner" class="banner onload-animation-fade-in">
-  <div class="transition-main banner-inner h-full w-full">
+<div id="banner" class="banner">
+  <div class="banner-inner h-full w-full">
     {
       !hasHeaderImg && (
         <div class="static-banner">
-          <div
+          <img
             class="banner-image"
-            style={{ backgroundImage: `url(${bannerImg})` }}
+            src={bannerImg}
+            alt="Banner"
+            loading="eager"
+            fetchpriority="high"
+            decoding="sync"
+            width="1920"
+            height="800"
           />
         </div>
       )
@@ -39,15 +45,15 @@ const bannerImg = YukinaConfig.banners[0];
             loading="eager"
             fetchpriority="high"
             decoding="sync"
+            width="1920"
+            height="800"
           />
         </div>
       )
     }
-    <div class="relative h-[95%] w-full">
-      <div
-        class="absolute left-1/2 top-1/2 w-4/5 -translate-x-1/2 -translate-y-1/2 lg:w-3/4"
-      >
-        <div class="flex flex-col">
+    <div class="content-overlay">
+      <div class="content-wrapper">
+        <div class="text-content">
           <h1
             class:list={[hasTitle ? "title-normal" : "title-index"]}
             class="title"
@@ -59,7 +65,7 @@ const bannerImg = YukinaConfig.banners[0];
       </div>
     </div>
   </div>
-  <div class="waves" id="header-waves">
+  <div class="waves">
     <svg
       class="waves"
       xmlns="http://www.w3.org/2000/svg"
@@ -106,33 +112,49 @@ const bannerImg = YukinaConfig.banners[0];
 
 <style>
   .banner {
-    @apply relative h-[calc(var(--banner-height)*3/4)] opacity-100 lg:h-[var(--banner-height)];
+    @apply relative h-[calc(var(--banner-height)*3/4)] lg:h-[var(--banner-height)];
+  }
+
+  .banner-inner {
+    @apply relative;
   }
 
   .static-banner {
-    @apply absolute left-0 top-0 -z-10 block h-[calc(var(--banner-height)*3/4)] w-full overflow-hidden bg-white lg:h-[var(--banner-height)];
+    @apply absolute left-0 top-0 h-[calc(var(--banner-height)*3/4)] w-full overflow-hidden bg-white lg:h-[var(--banner-height)];
   }
 
   .static-banner::before {
-    @apply absolute left-0 top-0 z-10 block h-full w-full bg-black/25 transition-all content-[''];
+    @apply absolute left-0 top-0 z-10 block h-full w-full bg-black/25 content-[''];
     @apply dark:bg-black/30;
   }
 
   .banner-image {
-    @apply h-full w-full bg-cover bg-center bg-no-repeat;
+    @apply h-full w-full object-cover;
   }
 
   .cover {
-    @apply absolute left-0 top-0 z-0 block h-[var(--banner-height)] w-full overflow-hidden bg-white;
+    @apply absolute left-0 top-0 h-[var(--banner-height)] w-full overflow-hidden bg-white;
   }
 
   .cover::before {
-    @apply absolute left-0 top-0 z-10 block h-full w-full bg-black/25 transition-all content-[''];
+    @apply absolute left-0 top-0 z-10 block h-full w-full bg-black/25 content-[''];
     @apply dark:bg-black/30;
   }
 
   .cover-image {
     @apply h-full w-full object-cover;
+  }
+
+  .content-overlay {
+    @apply relative h-[95%] w-full;
+  }
+
+  .content-wrapper {
+    @apply absolute left-1/2 top-1/2 w-4/5 -translate-x-1/2 -translate-y-1/2 lg:w-3/4;
+  }
+
+  .text-content {
+    @apply flex flex-col;
   }
 
   .title {

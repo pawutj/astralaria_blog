@@ -26,23 +26,27 @@ const bannerImage = YukinaConfig.banners[0];
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<meta name="generator" content={Astro.generator} />
 
-<!-- Preload critical resources -->
-<link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
-<link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
-<link rel="dns-prefetch" href="https://s2.loli.net" />
-
-<!-- Preload critical banner image for LCP (highest priority) -->
+<!-- HIGHEST PRIORITY: LCP Image Preload -->
 {isHomePage && bannerImage && (
   <link
     rel="preload"
     as="image"
     href={bannerImage}
     fetchpriority="high"
+    crossorigin="anonymous"
   />
 )}
+
+<!-- High priority connections -->
+<link rel="preconnect" href="https://s2.loli.net" crossorigin />
+<link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="generator" content={Astro.generator} />
+
+<!-- DNS prefetch for other resources -->
+<link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
 
 <!-- Preload critical fonts -->
 <link
@@ -91,7 +95,7 @@ const bannerImage = YukinaConfig.banners[0];
 <!-- SiteMap -->
 <link rel="sitemap" href="/sitemap-index.xml" />
 
-<!-- Critical CSS - Load KaTeX asynchronously for non-critical -->
+<!-- Lower priority CSS -->
 <link
   rel="preload"
   href="https://fastly.jsdelivr.net/npm/katex/dist/katex.min.css"
