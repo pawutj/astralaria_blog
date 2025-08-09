@@ -25,9 +25,11 @@ const carouselAnimationTime = `${carouselImgsList.length * 6}s`;
           <ul id="carousel_imgs">
             {carouselImgsList.map((img, index) => (
               <li
-                class="item lozad"
-                style={{ animationDelay: `${index * 6}s` }}
-                data-background-image={img}
+                class="item"
+                style={{ 
+                  animationDelay: `${index * 6}s`,
+                  backgroundImage: `url(${img})`
+                }}
               />
             ))}
           </ul>
@@ -38,9 +40,12 @@ const carouselAnimationTime = `${carouselImgsList.length * 6}s`;
       hasHeaderImg && (
         <div class="cover">
           <img
-            class="item lozad"
-            data-src={bannerImage ?? GetCoverURLForUnspecifiedEntry(slug ?? "")}
-            alt="PostCoverr"
+            class="item"
+            src={bannerImage ?? GetCoverURLForUnspecifiedEntry(slug ?? "")}
+            alt="PostCover"
+            loading="eager"
+            fetchpriority="high"
+            decoding="sync"
           />
         </div>
       )

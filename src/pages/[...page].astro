@@ -16,9 +16,12 @@ export async function getStaticPaths({
   return paginate(postCollections, { pageSize: 6 });
 }
 const { page } = Astro.props;
+
+// Check if this is the home page (first page)
+const isHomePage = page.currentPage === 1;
 ---
 
-<Main>
+<Main isHomePage={isHomePage}>
   <div class="space-y-8">
     <div class="w-full space-y-4">
       {
