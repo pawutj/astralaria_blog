@@ -1,5 +1,5 @@
 import { defineConfig } from "astro/config";
-
+import vercel from '@astrojs/vercel/static';
 import icon from "astro-icon";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
