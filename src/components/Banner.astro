@@ -15,6 +15,24 @@ const hasHeaderImg = bannerImage !== undefined || slug !== undefined;
 
 // Use only the first banner image for better performance
 const bannerImg = YukinaConfig.banners[0];
+
+// Generate responsive images for different screen sizes
+const generateResponsiveImages = (baseUrl: string) => {
+  if (baseUrl.includes('unsplash.com')) {
+    return {
+      mobile: `${baseUrl}&w=768&h=400`,
+      tablet: `${baseUrl}&w=1024&h=500`, 
+      desktop: `${baseUrl}&w=1920&h=800`
+    };
+  }
+  return {
+    mobile: baseUrl,
+    tablet: baseUrl,
+    desktop: baseUrl
+  };
+};
+
+const responsiveImages = generateResponsiveImages(bannerImg);
 ---
 
 <div id="banner" class="banner">
@@ -22,16 +40,27 @@ const bannerImg = YukinaConfig.banners[0];
     {
       !hasHeaderImg && (
         <div class="static-banner">
-          <img
-            class="banner-image"
-            src={bannerImg}
-            alt="Banner"
-            loading="eager"
-            fetchpriority="high"
-            decoding="sync"
-            width="1920"
-            height="800"
-          />
+          <picture>
+            <!-- Mobile: 768x400, Tablet: 1024x500, Desktop: 1920x800 -->
+            <source
+              media="(max-width: 768px)"
+              srcset={responsiveImages.mobile}
+            />
+            <source
+              media="(max-width: 1024px)"
+              srcset={responsiveImages.tablet}
+            />
+            <img
+              class="banner-image"
+              src={responsiveImages.desktop}
+              alt="Banner"
+              loading="eager"
+              fetchpriority="high"
+              decoding="sync"
+              width="1920"
+              height="800"
+            />
+          </picture>
         </div>
       )
     }

@@ -53,9 +53,12 @@ const YukinaConfig: Configuration = {
   maxFooterCategoryChip: 6,
   maxFooterTagChip: 24,
 
-  // Use only one banner image for optimal LCP performance
+  // TEMPORARY: Use a much smaller banner image for better LCP
+  // TODO: Replace with optimized version of your preferred image
   banners: [
-    "https://s2.loli.net/2025/01/25/PBvHFjr5yDu6t4a.webp",
+    // Using a smaller, optimized placeholder
+    // You should replace this with your optimized banner image (< 400KB)
+    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=800&fit=crop&crop=center&auto=format&q=75"
   ],
 
   slugMode: "HASH", // 'RAW' | 'HASH'
